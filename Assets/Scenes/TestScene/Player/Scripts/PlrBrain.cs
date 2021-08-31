@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//Test
+
 public class PlrBrain : MonoBehaviour
 {
                                     //References
     private Rigidbody rb;
+    private CapsuleCollider collider;
                                     //Input
     private float xInp;
     private float zInp;
@@ -26,10 +27,10 @@ public class PlrBrain : MonoBehaviour
     private bool jumpPressed;
     private Vector3 localVel;
     public float grdCtrMovement;
-                                            //Aerial Movement
-    public float aerialMoveForce;
-    public float maxAerialSpeed;
-    
+                                        //Slide
+    private bool slidePressed;
+    private bool isSliding;
+    public float downwardSlideForce;    // Extra speed in slopes
                                                 //Input Manager
     private void GetInp()
     {
@@ -53,6 +54,15 @@ public class PlrBrain : MonoBehaviour
         else
         {
             jumpPressed = false;
+        }
+
+        if(Input.GetKey(KeyCode.LeftControl))
+        {
+            slidePressed = true;
+        }
+        else if(Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            slidePressed = false;
         }
     }
                                                 //Ground Check
@@ -105,7 +115,7 @@ public class PlrBrain : MonoBehaviour
                 Sprint(direction);
             }
 
-            if(jumpPressed)
+            if(jumpPressed && onGround)
             {
                 Jump();
             }
@@ -161,17 +171,19 @@ public class PlrBrain : MonoBehaviour
             }
         }
 
-    void AerialMovement()
-    {
-        Vector3 direction = new Vector3(inpVect.x,0f,inpVect.y);
-        float planeVel = Mathf.Sqrt(Mathf.Pow(rb.velocity.x,2) + Mathf.Pow(rb.velocity.z,2));
-
-        if(planeVel < maxAerialSpeed)
+        void Slide()
         {
-            rb.AddForce((transform.forward*direction.z + transform.right*direction.x)*aerialMoveForce*Time.deltaTime,ForceMode.VelocityChange);
+            if(slidePressed)
+            {
+                isSliding = true;
+                collider.height = 0.33f;        //Reduces Collider Height
+                rb.AddForce(-Vector3.up * downwardSlideForce , ForceMode.VelocityChange); // Extra Speed in slopes
+            }
+            else if(!slidePressed)
+            {
+                collider.height = 1.0f; // Restores original height
+            }
         }
-
-    }
 
     void GetLocalVelocity()
     {
@@ -182,19 +194,14 @@ public class PlrBrain : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        collider = GetComponent<CapsuleCollider>();
     }
 
     void Update()
     {
         GetInp();
         GetLocalVelocity();
-        if(onGround)
-        {
-            GroundMovement();
-        }
-        else if(!onGround)
-        {
-            AerialMovement();
-        }
+        GroundMovement();
+        Slide();
     }
 }
