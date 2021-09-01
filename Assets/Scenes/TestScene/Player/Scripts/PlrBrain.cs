@@ -176,12 +176,12 @@ public class PlrBrain : MonoBehaviour
             if(slidePressed)
             {
                 isSliding = true;
-                collider.height = 0.33f;        //Reduces Collider Height
+                collider.height = 0.67f;        //Reduces Collider Height
                 rb.AddForce(-Vector3.up * downwardSlideForce , ForceMode.VelocityChange); // Extra Speed in slopes
             }
             else if(!slidePressed)
             {
-                collider.height = 1.0f; // Restores original height
+                collider.height = 2.0f; // Restores original height
             }
         }
 
