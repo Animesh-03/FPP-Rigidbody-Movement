@@ -6,15 +6,55 @@ public static class EquipSystem
 {
     public static bool isEquipped;
 
-    public static void Equip(GameObject obj, Vector3 targetPosition)
+    private static Vector3 targetPistolPosition = new Vector3(4.8499999f,-0.829999983f,4.72495842f);
+    private static Vector3 targetPistolRotation = new Vector3(270f,180f,0f);
+    private static Vector3 targetPistolScale = new Vector3(19.9762573f,17.7629871f,10f);
+
+    public static void Equip(GameObject obj, Vector3 targetPosition, Transform player)
     { 
+        switch (obj.name)
+        {
+            case "Pistol": EquipPistol(obj,targetPosition,player); break;
+            
+            default: break;
+        }
+
+        
         Debug.Log("Equipped " + obj.name);
         isEquipped = true;
     }
 
-    public static void Unequip(GameObject obj)
+    public static void Unequip(GameObject obj, Transform worldObj)
     {
+       switch (obj.name)
+       {
+           case "Pistol": UnequipPistol(obj,worldObj); break;
+           
+           default: break;
+       }
+
+
         Debug.Log("Unequipped " + obj.name);
         isEquipped = false;
+    }
+
+    static void EquipPistol(GameObject obj, Vector3 targetPosition, Transform player)
+    {
+        obj.transform.SetParent(player);
+
+        obj.GetComponent<Rigidbody>().isKinematic = true;
+
+        obj.transform.localPosition = targetPistolPosition;
+        obj.transform.localEulerAngles = targetPistolRotation;
+        obj.transform.localScale = targetPistolScale;
+
+        Debug.Log("Equipped Pistol");
+    }
+
+    static void UnequipPistol(GameObject obj, Transform worldObj)
+    {
+        obj.transform.SetParent(worldObj);
+        obj.GetComponent<Rigidbody>().isKinematic = false;
+        obj.GetComponent<Rigidbody>().AddForce(Vector3.forward * 2, ForceMode.Impulse);
     }
 }

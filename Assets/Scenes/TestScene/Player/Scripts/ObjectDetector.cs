@@ -6,6 +6,7 @@ public class ObjectDetector : MonoBehaviour
 {
 
     public float detectorRadius;
+    public Transform worlddObj;
     private Collider[] objects;
     private GameObject equippedObj;
 
@@ -22,7 +23,7 @@ public class ObjectDetector : MonoBehaviour
             if(obj.GetComponent<Collider>().tag == "canBeEquipped" && Input.GetKey(KeyCode.E) && !EquipSystem.isEquipped)
             {
                 equippedObj = obj.gameObject;
-                EquipSystem.Equip(equippedObj,transform.position);
+                EquipSystem.Equip(equippedObj,transform.position,Camera.main.transform);
 
 
                 break;
@@ -32,7 +33,7 @@ public class ObjectDetector : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Q) && EquipSystem.isEquipped )
         {
-            EquipSystem.Unequip(equippedObj);
+            EquipSystem.Unequip(equippedObj,worlddObj);
         }
     }
 }
