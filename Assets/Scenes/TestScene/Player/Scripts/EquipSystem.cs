@@ -12,13 +12,10 @@ public static class EquipSystem
 
     public static void Equip(GameObject obj, Vector3 targetPosition, Transform player)
     { 
-        switch (obj.name)
+        switch (obj.GetComponent<Collider>().name)
         {
-            case "Pistol": EquipPistol(obj,targetPosition,player); break;
-            
-            default: break;
+            case "Pistol": obj.GetComponent<Pistol>().Equip(targetPosition,player); break;
         }
-
         
         Debug.Log("Equipped " + obj.name);
         isEquipped = true;
@@ -26,29 +23,13 @@ public static class EquipSystem
 
     public static void Unequip(GameObject obj, Transform worldObj)
     {
-       switch (obj.name)
-       {
-           case "Pistol": UnequipPistol(obj,worldObj); break;
-           
-           default: break;
-       }
-
+        switch (obj.GetComponent<Collider>().name)
+        {
+            case "Pistol": obj.GetComponent<Pistol>().Unequip(worldObj); break;
+        }
 
         Debug.Log("Unequipped " + obj.name);
         isEquipped = false;
-    }
-
-    static void EquipPistol(GameObject obj, Vector3 targetPosition, Transform player)
-    {
-        obj.transform.SetParent(player);
-
-        obj.GetComponent<Rigidbody>().isKinematic = true;
-
-        obj.transform.localPosition = targetPistolPosition;
-        obj.transform.localEulerAngles = targetPistolRotation;
-        obj.transform.localScale = targetPistolScale;
-
-        Debug.Log("Equipped Pistol");
     }
 
     static void UnequipPistol(GameObject obj, Transform worldObj)
