@@ -6,6 +6,8 @@ public class Pistol : MonoBehaviour
 {
     //References
     private Rigidbody rb;
+    private Camera cam;
+    
 
     //Transforms on equip
     private Vector3 targetPistolPosition = new Vector3(4.8499999f,-0.829999983f,4.72495842f);
@@ -15,6 +17,13 @@ public class Pistol : MonoBehaviour
     //Parameters
     private bool isEquipped;
     public float throwForce;
+    public float shootForce;
+
+    //Input
+    private bool LMBPressed;
+    private Vector3 mousePos;
+    private RaycastHit hit;
+    private Ray mouseRay;
 
 
 
@@ -41,14 +50,52 @@ public class Pistol : MonoBehaviour
         isEquipped = false;
     }
 
+    private void GetInput()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            LMBPressed = true;
+        }
+        else
+        {
+            LMBPressed = false;
+        }
+
+        mouseRay = cam.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(mouseRay,out hit))
+        {
+            Debug.DrawLine(transform.position,hit.point);
+            Debug.Log(hit.collider.name);
+        }
+    }
+
+    private void Shoot()
+    {
+        Rigidbody rbObj = hit.collider.transform.GetComponent<Rigidbody>();
+        if(rbObj != null)
+        {
+            rbObj.AddForce(mouseRay.direction.normalized * shootForce,ForceMode.Impulse);
+            Debug.Log("Obj found, " + mouseRay.direction * shootForce);
+        }
+
+
+        Debug.Log("Fired");
+    }
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        cam = Camera.main;
     }
 
     void Update()
     {
-        
+        GetInput();
+
+        if(isEquipped && LMBPressed)
+        {
+            Shoot();
+        }
     }
 }
